@@ -15,6 +15,8 @@ services:
       - mysql_data:/var/lib/mysql
     networks: 
       - backend-network
+    security_opt:
+      - seccomp:unconfined
     restart: always
   
   phpmyadmin:
@@ -34,6 +36,18 @@ services:
     image: prestashop/prestashop
     environment: 
       - DB_SERVER=mysql
+      - DB_USER=${DB_USER}
+      - DB_PASSWD=${DB_PASSWD}
+      - DB_PREFIX=${DB_PREFIX}
+      - DB_NAME=${DB_NAME}
+      - PS_DOMAIN=${PS_DOMAIN}
+      - PS_LANGUAGE=${PS_LANGUAGE}
+      - PS_COUNTRY=${PS_COUNTRY}
+      - PS_ENABLE_SSL=0
+      - ADMIN_MAIL=${ADMIN_MAIL}
+      - ADMIN_PASSWD=${ADMIN_PASSWD}
+      - PS_FOLDER_INSTALL=${PS_FOLDER_INSTALL}
+      - PS_FOLDER_ADMIN=${PS_FOLDER_ADMIN}
     volumes:
       - prestashop_data:/var/www/html
     networks: 
