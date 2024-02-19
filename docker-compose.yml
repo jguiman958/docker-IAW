@@ -3,7 +3,7 @@ version: '3.4'
 services:
   mysql:
     image: mysql
-    command: --default-authentication-plugin=mysql_native_password
+    #command: --default-authentication-plugin=mysql_native_password
     ports: 
       - 3306:3306
     environment: 
@@ -15,6 +15,8 @@ services:
       - mysql_data:/var/lib/mysql
     networks: 
       - backend-network
+    security_opt:
+      - seccomp:unconfined
     restart: always
   
   phpmyadmin:
@@ -31,7 +33,7 @@ services:
       - mysql
 
   prestashop:
-    image: prestashop/prestashop
+    image: prestashop/prestashop:8
     environment: 
       - DB_SERVER=mysql
       - DB_USER=${DB_USER}
@@ -41,11 +43,10 @@ services:
       - PS_DOMAIN=${PS_DOMAIN}
       - PS_LANGUAGE=${PS_LANGUAGE}
       - PS_COUNTRY=${PS_COUNTRY}
-      - PS_ENABLE_SSL=0
+      - PS_ENABLE_SSL=1
+      - PS_INSTALL_AUTO=1
       - ADMIN_MAIL=${ADMIN_MAIL}
       - ADMIN_PASSWD=${ADMIN_PASSWD}
-      - PS_FOLDER_INSTALL=${PS_FOLDER_INSTALL}
-      - PS_FOLDER_ADMIN=${PS_FOLDER_ADMIN}
     volumes:
       - prestashop_data:/var/www/html
     networks: 
