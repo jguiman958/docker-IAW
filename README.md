@@ -210,13 +210,14 @@ Es necesario crear, estas redes y volumenes al final para que se asigne de forma
 
 Comprobacion de que al lanzar el comando ``docker-compose up`` funcione.
 
-![alt text]()
+![prestashopnGITHUB](https://github.com/jguiman958/docker-IAW/assets/145347496/91685ba8-443d-482a-affc-c2cde26c4e19)
 
 Podemos comprobar que se ha ejecutado la instruccion correctamente y ya está prestashop instalado.
 
 ## Comprobación de que muestra el contenido via cliente web de forma segura.
 
-![alt text]()
+![prestashopn -contenedoresiniciadosyfuncionando](https://github.com/jguiman958/docker-IAW/assets/145347496/ca0b7c5e-f854-4925-99b6-e8b3f17fcca7)
+
 
 Podemos comprobar que muestra el contenido de forma segura, encriptando las peticiones y respuestas entre cliente y servidor. El certificado es valido por una autoridad certificadora.
 
