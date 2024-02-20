@@ -212,12 +212,12 @@ Es necesario crear, estas redes y volumenes al final para que se asigne de forma
 
 Comprobacion de que al lanzar el comando ``docker-compose up`` funcione.
 
-![alt text](capturas/captura-prestashop.PNG)
+![alt text](<capturas/Comprobaciónd e que prestashop funciona via web.PNG>)
 
 Podemos comprobar que se ha ejecutado la instruccion correctamente y ya está prestashop instalado.
 
 ## Comprobación de que muestra el contenido via cliente web de forma segura.
 
-![alt text](capturas/PRESTASHOP1.PNG)
+![alt text](<capturas/Ejecución completa de docker compose.PNG>)
 
 Podemos comprobar que muestra el contenido de forma segura, encriptando las peticiones y respuestas entre cliente y servidor. El certificado es valido por una autoridad certificadora.
