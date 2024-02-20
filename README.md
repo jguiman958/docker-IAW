@@ -1,5 +1,5 @@
-# Instalación de Prestashop a traves de docker con la imagen de bitnami.
-## Creación de los respectivos contenedores para la instalación de wordpress.
+# Instalación de Prestashop a traves de docker con la imagen oficial de prestashop.
+## Creación de los respectivos contenedores para la instalación de prestashop.
 
 ### ¿Qué es docker?
 Docker es una plataforma de código abierto diseñada para facilitar la creación, implementación y ejecución de aplicaciones en contenedores. Un contenedor se puede definir como un entorno ligero, aislado y portable, que contiene todo lo necesario (código fuente, dependencias, etc.) para ejecutar una aplicación, un contenedor suele tener un único procesos en ejecución, aunque es posible tener varios. Una de las ventajas que aporta el uso de contenedores es que garantiza que una aplicación se ejecute de la misma manera en cualquier entorno.
@@ -39,24 +39,22 @@ version: '3.3'
 
 services:
  prestashop:
-    image: bitnami/prestashop:1.7
+    image: prestashop/prestashop:8
     environment: 
-      - PRESTASHOP_FIRST_NAME=${PRESTASHOP_FIRST_NAME}
-      - PRESTASHOP_LAST_NAME=${PRESTASHOP_LAST_NAME}
-      - PRESTASHOP_PASSWORD=${PRESTASHOP_PASSWORD}
-      - PRESTASHOP_HOST=${DNS_DOMAIN_SECURE}
-      - PRESTASHOP_EMAIL=${PRESTASHOP_EMAIL}
-      - PRESTASHOP_COUNTRY=${PRESTASHOP_COUNTRY}
-      - PRESTASHOP_DATABASE_HOST=mysql
-      - PRESTASHOP_DATABASE_NAME=${PRESTASHOP_DATABASE_NAME}
-      - ALLOW_EMPTY_PASSWORD=yes
-      - PRESTASHOP_DATABASE_USER=${PRESTASHOP_DATABASE_USER}
-      - PRESTASHOP_DATABASE_PASSWORD=${PRESTASHOP_DATABASE_PASSWORD}
-      - PRESTASHOP_DATABASE_PREFIX=${PRESTASHOP_DATABASE_PREFIX}
-      - PRESTASHOP_ENABLE_SSL=1
-      - PRESTASHOP_ENABLE_HTTPS=yes
+      - DB_SERVER=mysql
+      - DB_USER=${DB_USER}
+      - DB_PASSWD=${DB_PASSWD}
+      - DB_PREFIX=${DB_PREFIX}
+      - DB_NAME=${DB_NAME}
+      - PS_DOMAIN=${PS_DOMAIN}
+      - PS_LANGUAGE=${PS_LANGUAGE}
+      - PS_COUNTRY=${PS_COUNTRY}
+      - PS_ENABLE_SSL=1
+      - PS_INSTALL_AUTO=1
+      - ADMIN_MAIL=${ADMIN_MAIL}
+      - ADMIN_PASSWD=${ADMIN_PASSWD}
     volumes: 
-      - prestashop_data:/bitnami/prestashop
+      - prestashop_data:/var/www/html
     depends_on:
       - mysql
     restart: always
@@ -68,32 +66,31 @@ services:
 Que tenemos aquí...
 La versión, la cual usa la versión de docker-compose: ``3``
 
-Seguidamente comenzamos con el servicio de wordpress que contiene estas ips para la instalación.
+Seguidamente comenzamos con el servicio de prestashop que contiene estas ips para la instalación.
 
-Sacando la imagen de docker hub, usando la instalacion de prestashop de bitnami tenemos que trabajar con las etiquetas que nos ofrece esa ofrece esa imagen de wordpress, es necesario establecer la version en concreto con la que vamos a trabajar ``1.7``
+Sacando la imagen de docker hub, usando la instalacion de prestashop de bitnami tenemos que trabajar con las etiquetas que nos ofrece esa ofrece esa imagen de prestashop, es necesario establecer la version en concreto con la que vamos a trabajar ``8``
 
-En environment visualizamos las variables que contiene información sobre la instalación automatizada de wordpress.
+En environment visualizamos las variables que contiene información sobre la instalación automatizada de prestashop.
 Estas variables, para se exactos:
 
 ```
-# Dominio.
-DNS_DOMAIN_SECURE=docker-host.local
-
-# Creación de las variables.
-PRESTASHOP_FIRST_NAME=Bitnami
-PRESTASHOP_LAST_NAME=User
-PRESTASHOP_PASSWORD=bitnami1
-PRESTASHOP_EMAIL=prestashop@prestashop.com
-PRESTASHOP_COUNTRY=es
-PRESTASHOP_LANGUAGE=es
-PRESTASHOP_DATABASE_HOST=mysql
-PRESTASHOP_DATABASE_NAME=prestashop
-PRESTASHOP_DATABASE_USER=ps_user
-PRESTASHOP_DATABASE_PASSWORD=ps_passwd
-PRESTASHOP_DATABASE_PREFIX=ps_
-
+DNS_DOMAIN_SECURE=docker-prestashopn.ddns.net
 
 MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=prestashop
+MYSQL_USER=ps_user
+MYSQL_PASSWORD=admin
+
+# Variables del prestashop:
+DB_USER=ps_user
+DB_PASSWD=admin
+DB_PREFIX=ps_
+DB_NAME=prestashop
+PS_DOMAIN=docker-prestashopn.ddns.net
+PS_LANGUAGE=es
+PS_COUNTRY=ES
+ADMIN_MAIL=demo@prestashop.com
+ADMIN_PASSWD=prestashop_demo
 ```
 
 Necesarios para la automatización de la instalación.
@@ -107,14 +104,14 @@ Docker-compose, funciona con etiquetas, no hace falta poner ips este fichero ya 
 
 ```
   mysql:
-    image: mysql:8.0
+    image: mysql
     ports:
       - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${PRESTASHOP_DATABASE_NAME}
-      - MYSQL_USER=${PRESTASHOP_DATABASE_USER}
-      - MYSQL_PASSWORD=${PRESTASHOP_DATABASE_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
     restart: always
@@ -131,9 +128,10 @@ Estableciendo unconfined para que no presenten restricciones en el contenedor.
 Estas son las variables que usa:
 
 ```
-PRESTASHOP_DATABASE_NAME=prestashop
-PRESTASHOP_DATABASE_USER=ps_user
-PRESTASHOP_DATABASE_PASSWORD=ps_passwd
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=prestashop
+MYSQL_USER=ps_user
+MYSQL_PASSWORD=admin
 ```
 
 Como podemos ver concuerda con las variables de la base de datos asignada a prestashop.
@@ -154,7 +152,7 @@ Como podemos ver concuerda con las variables de la base de datos asignada a pres
 
 Aquí instala phpmyadmin tomando como host mysql y asignando las dos redes, las necesita para poder acceder a la base de datos desde el frontend, como comprobamos no le asignamos persistencia.
 
-#### Comenzamos la parte de instalación de https en wordpress, para securizarlo.
+#### Comenzamos la parte de instalación de https en prestashop, para securizarlo.
 ```
   https-portal:
     image: steveltn/https-portal:1
@@ -173,7 +171,7 @@ Aquí instala phpmyadmin tomando como host mysql y asignando las dos redes, las 
 En este caso, necesita los 80 y 443, http y https, http para que se pueda comunica con las otras maquinas, y https para que muestra el contenido de forma segura, encriptando las peticiones, es necesario usar la variable:
 
 ```
-DNS_DOMAIN_SECURE=docker-dominio.ddns.net
+DNS_DOMAIN_SECURE=docker-prestashopn.ddns.net
 ```
 
 Para acceder desde local, STAGE establecerlo en staging.
@@ -212,12 +210,15 @@ Es necesario crear, estas redes y volumenes al final para que se asigne de forma
 
 Comprobacion de que al lanzar el comando ``docker-compose up`` funcione.
 
-![alt text](<capturas/Comprobaciónd e que prestashop funciona via web.PNG>)
+
+![alt text](<capturas/Ejecución completa de docker compose.PNG>)
 
 Podemos comprobar que se ha ejecutado la instruccion correctamente y ya está prestashop instalado.
 
 ## Comprobación de que muestra el contenido via cliente web de forma segura.
 
-![alt text](<capturas/Ejecución completa de docker compose.PNG>)
+![](<capturas/Comprobaciónd e que prestashop funciona via web.PNG>)
+
 
 Podemos comprobar que muestra el contenido de forma segura, encriptando las peticiones y respuestas entre cliente y servidor. El certificado es valido por una autoridad certificadora.
+
